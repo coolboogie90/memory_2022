@@ -16,6 +16,11 @@ public class LevelManager : MonoBehaviour
 
     private List<CubeBehaviour> cubesRevealed = new List<CubeBehaviour>();
 
+    private List<CubeBehaviour> alreadyMatched = new List<CubeBehaviour>();
+
+    public float timeBeforeUnreveal = 0.5f;
+
+
     void Start()
     {
         if ((rows * columns) % 2 != 0) //si je ne suis pas un nb pair, j'affiche un message d'erreur et je ne génère pas le level
@@ -27,7 +32,7 @@ public class LevelManager : MonoBehaviour
         for (int i = 0; i < materials.Length; i++) //moins couteux qu'un foreach qui ferait une allocation de méméoire sur chaque élément de l liste
         {
             potentialMaterials.Add(materials[i]);
-            potentialMaterials.Add(materials[i]); //o
+            potentialMaterials.Add(materials[i]); //on rajoute deux fois
         }
 
         float interval = 1 + padding;
@@ -41,21 +46,40 @@ public class LevelManager : MonoBehaviour
         }
     }
 
+IEnumerator UnrevealCubes()
+{
+    yield return new WaitForSeconds(timeBeforeUnreveal);
+    for (int i = 0; i < cubesRevealed.Count; i++)
+        {
+            cubesRevealed[i].UnrevealColor();                    
+        }
+    cubesRevealed.Clear();
+
+}
+
     public void CubeIsClicked(CubeBehaviour cube)
     {
         if(cubesRevealed.Contains(cube)) return;
-        cube.RevealColor();
-        //Debug.Log($"{cube.name} has been revealed.");
+        if(alreadyMatched.Contains(cube)) return;
+        if(cubesRevealed.Count >= 2 ) return;
+
+        cube.RevealColor();         //Debug.Log($"{cube.name} has been revealed.");
         cubesRevealed.Add(cube);
+        
         if(cubesRevealed.Count >= 2)
         {
             if(cubesRevealed[0].hiddenMaterial == cubesRevealed[1].hiddenMaterial)
             {
                 Debug.Log("It's a match!!!");
+                alreadyMatched.Add(cubesRevealed[0]);
+                alreadyMatched.Add(cubesRevealed[1]);
+                cubesRevealed.Clear();
             }
-            cubesRevealed.Clear();
+            else
+            {
+                StartCoroutine("UnrevealCubes");
+            }
         }
-
     }
 
     private void CreateCube(Vector3 position)

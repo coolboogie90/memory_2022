@@ -25,7 +25,7 @@ public class CubeBehaviour : MonoBehaviour
 
     }
 
-    public void UnRevealColor()
+    public void UnrevealColor()
     {
         GetComponent<Renderer>().material = originalMaterial;
 
