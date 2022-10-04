@@ -2,11 +2,13 @@ using System.Reflection;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class LevelManager : MonoBehaviour
 {
     public GameObject cubePrefab;
-    
+    public TextMeshProUGUI scoreText;
+    private int score = 0;
     public int rows, columns;
     public float padding;
     public Material[] materials;
@@ -68,6 +70,9 @@ IEnumerator UnrevealCubes()
         
         if(cubesRevealed.Count >= 2)
         {
+            score++;
+            scoreText.text = score.ToString();
+            
             if(cubesRevealed[0].hiddenMaterial == cubesRevealed[1].hiddenMaterial)
             {
                 Debug.Log("It's a match!!!");
